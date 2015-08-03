@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Google Android Studio
+GenericName=Google Android Studio - The intelligent Android IDE
+Exec=studio
+Terminal=false
+Icon=idea
+Type=Application
+Categories=Development;
+X-Desktop-File-Install-Version=0.21

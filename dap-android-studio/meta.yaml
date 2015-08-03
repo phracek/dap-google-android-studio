@@ -1,0 +1,10 @@
+package_name: android-studio
+version: 0.0.1
+license: GPLv2+
+summary: Google Android Studio assistant
+homepage: https://github.com/phracek/dap-google-android-studio
+authors: [Petr Hracek <phracek@redhat.com>]
+supported_platforms: [fedora]
+description: |
+    This package prepare your environment for working with android devices by Google Android Studio.
+
