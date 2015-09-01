@@ -1,0 +1,104 @@
+fullname: Android
+description: The Android assistant will help you to install Android IDE environment and develop application from Android devices
+
+dependencies:
+- rpm: ['ant'] # For building android applications
+# Packages needed for Android SDK
+- rpm: ['glibc(x86-32)', 'glibc-devel(x86-32)']
+- rpm: ['zlib-devel(x86-32)', 'libstdc++(x86-32)', 'ncurses-devel(x86-32)', 'SDL(x86-32)' ]
+- rpm: ['libX11-devel(x86-32)', 'libXrandr(x86-32)', 'libXrender(x86-32)' , 'xz-libs(x86-32)', 'libXxf86vm']
+- rpm: ['libXdamage(x86-32)', 'libXfixes(x86-32)']
+- rpm: ['android-tools'] # ADB is required
+
+args:
+  name:
+    use: common_args
+  sdk:
+    flags:
+    - --sdk
+    help:
+        'This executes Android SDK Manager for downloading other APIs and System Images'
+    action:
+        'store_true'
+  avd:
+    flags:
+    - --avd
+    help:
+        'This executes Android AVD Manager for creation a virtual device'
+    action:
+        'store_true'
+#  rpm:
+#    flags:
+#    - --rpm
+#    help:
+#        'This will create Android Studion rpm package which can be installed'
+#    action:
+#        'store_true'
+
+files:
+  android_sources: &android_sources
+    source: .
+
+run:
+- $pwd~: $(pwd)
+- $home~: $(echo $HOME)
+- $dirname~: $(dirname "$name")
+- $basename~: $(basename "$name")
+- $version_ide: "android-studio-ide-141.2117773-linux.zip"
+- $version_sdk: "android-sdk_r24.3.3-linux.tgz"
+- $url_ide: "https://dl.google.com/dl/android/studio/ide-zips/1.3.0.10/"
+- $url_sdk: "http://dl.google.com/android/"
+- cl: cd ~/
+- if not $(ls "$version"):
+    - log_i: "Android studio was not found on system."
+    - $confirmed~:
+      - ask_confirm:
+          message: "Downloading android studio takes a time. Do you want to continue?"
+          prompt:  "Select"
+    - if not $confirmed:
+      - log_e: "Aborted by user, exiting"
+    - log_i: "Downloading android studio from $url_ide$version_ide"
+    - cl: curl --progress-bar -o ~/$version_ide $url_ide$version_ide
+    - log_i: "Downloading done"
+    - log_i: "Downloading android SDK from $url_sdk$version_sdk"
+    - cl: curl --progress-bar -o ~/$version_sdk $url_sdk$version_sdk
+    - log_i: "Downloading done"
+    - cl: unzip $version_ide
+    - cl: tar -xzvf $version_sdk -C android-studio
+- cl: cd "$pwd"
+- if defined $sdk:
+    - log_i: 'Running Android SDK Manager for update development tools'
+    - log_i: 'Select at least one System Image from API 20 e.g.'
+    - cl: $home/android-studio/android-sdk-linux/tools/android sdk
+- if defined $avd:
+    - log_i: 'Running Android AVD Manager for creation at least one virtual device.'
+    - cl: $home/android-studio/android-sdk-linux/tools/android avd
+- if not $(ls "$pwd/$basename"):
+  - cl: mkdir -p "$pwd/$basename"
+  - log_i: 'Copy android template project to project destination'
+  - log_i: '$dirname'
+  - cl_i: cp -r *android_sources "$basename"
+  - dda_c: "$basename"
+  - cl: cd "$basename"
+  - cl: mv MyApplication.iml $basename.iml
+  - cl: sed -i "s|MyApplication|$basename|" app/build/intermediates/incremental/mergeResources/debug/merger.xml
+  - cl: sed -i "s|MyApplication|$basename|" app/build/intermediates/res/debug/values/values.xml
+  - cl: sed -i "s|MyApplication|$basename|" app/src/main/res/values/strings.xml
+  - $cldate~: $(LC_ALL=C date '+%a %b %d %Y')
+  - $clname~: $(git config user.name)
+  - if not $clname:
+    - $clname~: $(python -c 'import pwd,posix; print pwd.getpwuid(posix.getuid()).pw_gecos')
+  - $clemail~: $(git config user.email)
+  - if not $clemail:
+    - $clemail1~: $(id -un)
+    - $clemail2~: $(uname -n)
+    - $clemail~: "$clemail1@$clemail1"
+  - cl: sed -i "s|Fri Mar 15 2013 UserName <user@host>|$cldate $clname <$clemail>|" android-studio.spec
+
+  - use: init_add_commit.run
+- else:
+  - cl: cd "$basename"
+  - log_i: 'Project already exists'
+
+- log_i: "For import project into Android Studio executed command:"
+- log_i: "$home/android-studio/bin/studio.sh $basename/build.gradle"
