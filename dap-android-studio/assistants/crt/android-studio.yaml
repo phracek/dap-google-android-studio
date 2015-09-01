@@ -1,5 +1,5 @@
-fullname: Android
-description: The Android assistant will help you to install Android IDE environment and develop application from Android devices
+fullname: Android studio
+description: The Android studio assistant will help you to install Android IDE environment and develop application from Android devices
 
 dependencies:
 - rpm: ['ant'] # For building android applications
