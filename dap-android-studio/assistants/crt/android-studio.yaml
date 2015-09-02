@@ -95,7 +95,7 @@ run:
     - $clemail~: "$clemail1@$clemail1"
   - cl: sed -i "s|Fri Mar 15 2013 UserName <user@host>|$cldate $clname <$clemail>|" android-studio.spec
 
-  - use: init_add_commit.run
+  - use: git.init_add_commit.run
 - else:
   - cl: cd "$basename"
   - log_i: 'Project already exists'
