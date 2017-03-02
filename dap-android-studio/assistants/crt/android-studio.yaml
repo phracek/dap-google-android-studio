@@ -58,11 +58,17 @@ run:
     - if not $confirmed:
       - log_e: "Aborted by user, exiting"
     - log_i: "Downloading android studio from $url_ide$version_ide"
-    - cl: curl --progress-bar -o ~/$version_ide $url_ide$version_ide
-    - log_i: "Downloading done"
+    - if not $(ls "~/$version_ide"):
+        - cl: curl --progress-bar -o ~/$version_ide $url_ide$version_ide
+        - log_i: "Downloading done."
+    - else:
+        - log_i: "Android studio is already downloaded."
     - log_i: "Downloading android SDK from $url_sdk$version_sdk"
-    - cl: curl --progress-bar -o ~/$version_sdk $url_sdk$version_sdk
-    - log_i: "Downloading done"
+    - if not $(ls "~/$version_sdk"):
+      - cl: curl --progress-bar -o ~/$version_sdk $url_sdk$version_sdk
+      - log_i: "Downloading done"
+    - else:
+        - log_i: "Android SDK is already downloaded."
     - cl: unzip $version_ide
     - cl: tar -xzvf $version_sdk -C android-studio
 - cl: cd "$pwd"
