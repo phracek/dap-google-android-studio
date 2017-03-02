@@ -44,6 +44,7 @@ files:
 run:
 - $pwd~: $(pwd)
 - $home~: $(echo $HOME)
+- $user~: $(echo $USER)
 - $dirname~: $(dirname "$name")
 - $basename~: $(basename "$name")
 - $version_ide: "android-studio-ide-141.2117773-linux.zip"
@@ -71,8 +72,9 @@ run:
       - log_i: "Downloading done"
     - else:
         - log_i: "Android SDK is already downloaded."
-    - cl: unzip $version_ide
-    - cl: tar -xzvf $version_sdk -C android-studio
+    - if not $(ls -d "~/android-studio"):
+      - cl: unzip $version_ide
+      - cl: tar -xzvf $version_sdk -C android-studio
 - cl: cd "$pwd"
 - if defined $sdk:
     - log_i: 'Running Android SDK Manager for update development tools'
@@ -85,7 +87,8 @@ run:
   - cl: mkdir -p "$pwd/$basename"
   - log_i: 'Copy android template project to project destination'
   - log_i: '$dirname'
-  - cl_i: cp -r *android_sources "$basename"
+  - cl_i: sudo cp -r *android_sources "$basename"
+  - cl_i: sudo chown -R $user:$user "$basename"
   - dda_c: "$basename"
   - cl: cd "$basename"
   - cl: mv MyApplication.iml $basename.iml
