@@ -6,10 +6,11 @@ dependencies:
 # Packages needed for Android SDK
 - rpm: ['glibc', 'glibc(x86-32)', 'glibc-devel(x86-32)']
 - rpm: ['zlib-devel(x86-32)', 'libstdc++(x86-32)', 'ncurses-devel(x86-32)', 'SDL(x86-32)' ]
-- rpm: ['libX11-devel(x86-32)', 'libX11', 'libX11(x86_32)']
+- rpm: ['libX11-devel(x86-32)', 'libX11']
 - rpm: ['libXrandr(x86-32)', 'libXrender(x86-32)' , 'xz-libs(x86-32)', 'libXxf86vm']
 - rpm: ['libXdamage(x86-32)', 'libXfixes(x86-32)']
 - rpm: ['android-tools'] # ADB is required
+- rpm: ['devassistant-dap-git']
 
 args:
   name:
